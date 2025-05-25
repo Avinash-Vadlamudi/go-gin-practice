@@ -1,8 +1,9 @@
 package main
 
 import (
-	cors "github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
+	"log"
 )
 
 // func v1EndPointHandler(c *gin.Context) {
@@ -53,6 +54,12 @@ import (
 // }
 
 
+func FindUserAgent() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		log.Println(c.GetHeader("User-Agent"))
+	
+		c.Next()}
+}
 
 func main() {
 	router := gin.Default()
@@ -121,13 +128,23 @@ func main() {
 
 
 
-	router.Use(cors.Default())
+	// router.Use(cors.Default())
 
-	router.GET("/", func (c* gin.Context) {
-		c.JSON(200, gin.H{
-			"message": "CORS works!",
+	// router.GET("/", func (c* gin.Context) {
+	// 	c.JSON(200, gin.H{
+	// 		"message": "CORS works!",
+	// 	})
+	// })
+
+
+	router.Use(FindUserAgent())
+
+	router.GET("/", func (c *gin.Context) {
+		c.JSON(200, gin.H {
+			"message": "Middleware works!",
 		})
 	})
+
 
 	router.Run(":3000")
 }
