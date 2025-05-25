@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 )
 
@@ -41,10 +43,17 @@ import (
 // 	})
 // }
 
-type Product struct {
-	Id int `json:"id" xml:"Id" yaml:"id"`
-	Name string `json:"name" xml:"Name" yaml:"name"` 
+// type Product struct {
+// 	Id int `json:"id" xml:"Id" yaml:"id"`
+// 	Name string `json:"name" xml:"Name" yaml:"name"`
+// }
+
+type PrintJob struct {
+	JobId int `json:"jobId" binding:"required,gte=10000"`
+	Pages int `json:"pages" binding:"required,gte=1,lte=100"`
 }
+
+
 
 func main() {
 	router := gin.Default()
@@ -70,33 +79,46 @@ func main() {
 
 	// router.POST("/add", add)
 
-	router.GET("/productJSON", func(ctx *gin.Context) {
-		product := Product{
-			Id: 1,
-			Name: "Apple",
-		}
+	// router.GET("/productJSON", func(ctx *gin.Context) {
+	// 	product := Product{
+	// 		Id: 1,
+	// 		Name: "Apple",
+	// 	}
 
-		ctx.JSON(200, product)
-	})
+	// 	ctx.JSON(200, product)
+	// })
 	
-	router.GET("/productXML", func(ctx *gin.Context) {
-		product := Product{
-			Id: 2,
-			Name: "Banana",
-		}
+	// router.GET("/productXML", func(ctx *gin.Context) {
+	// 	product := Product{
+	// 		Id: 2,
+	// 		Name: "Banana",
+	// 	}
 
-		ctx.XML(200, product)
-	})
+	// 	ctx.XML(200, product)
+	// })
 	
-	router.GET("/productYAML", func(ctx *gin.Context) {
-		product := Product{
-			Id: 3,
-			Name: "Banana",
+	// router.GET("/productYAML", func(ctx *gin.Context) {
+	// 	product := Product{
+	// 		Id: 3,
+	// 		Name: "Banana",
+	// 	}
+
+	// 	ctx.YAML(200, product)
+	// })
+
+	router.POST("/print", func(c *gin.Context) {
+		var p PrintJob
+		if err := c.ShouldBindJSON(&p); err != nil {
+			c.JSON(400, gin.H{
+				"error": "Invalid print job",
+				"details": err.Error(),
+			})
+			return
 		}
-
-		ctx.YAML(200, product)
+		c.JSON(200, gin.H{
+			"message": fmt.Sprintf("Print job #%v started!", p.JobId),
+		})
 	})
-
 
 	router.Run(":3000")
 }
