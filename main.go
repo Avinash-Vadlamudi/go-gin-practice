@@ -19,29 +19,32 @@ import (
 // 	c.String(200, fmt.Sprintf("Sum: %f", x + y))
 // }
 
-type AddParams struct {
-	X float64 `json:"x"`
-	Y float64 `json:"y"`
+// type AddParams struct {
+// 	X float64 `json:"x"`
+// 	Y float64 `json:"y"`
+// }
+
+// func add(c *gin.Context) {
+// 	var ap AddParams
+// 	err := c.ShouldBindJSON(&ap)
+// 	if err != nil {
+// 		c.JSON(400, gin.H {
+// 			"error": "Calculator error",
+// 			"check": err,
+// 		})
+// 		return
+// 	}
+
+// 	c.JSON(200, gin.H {
+// 		"Sum": ap.X + ap.Y,
+// 		"check2": err,
+// 	})
+// }
+
+type Product struct {
+	Id int `json:"id" xml:"Id" yaml:"id"`
+	Name string `json:"name" xml:"Name" yaml:"name"` 
 }
-
-
-func add(c *gin.Context) {
-	var ap AddParams
-	err := c.ShouldBindJSON(&ap)
-	if err != nil {
-		c.JSON(400, gin.H {
-			"error": "Calculator error",
-			"check": err, 
-		})
-		return
-	}
-
-	c.JSON(200, gin.H {
-		"Sum": ap.X + ap.Y,
-		"check2": err, 
-	})
-}
-
 
 func main() {
 	router := gin.Default()
@@ -65,7 +68,35 @@ func main() {
 
 	// router.GET("/add/:x/:y", add)
 
-	router.POST("/add", add)
+	// router.POST("/add", add)
+
+	router.GET("/productJSON", func(ctx *gin.Context) {
+		product := Product{
+			Id: 1,
+			Name: "Apple",
+		}
+
+		ctx.JSON(200, product)
+	})
+	
+	router.GET("/productXML", func(ctx *gin.Context) {
+		product := Product{
+			Id: 2,
+			Name: "Banana",
+		}
+
+		ctx.XML(200, product)
+	})
+	
+	router.GET("/productYAML", func(ctx *gin.Context) {
+		product := Product{
+			Id: 3,
+			Name: "Banana",
+		}
+
+		ctx.YAML(200, product)
+	})
+
 
 	router.Run(":3000")
 }
