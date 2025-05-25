@@ -1,9 +1,6 @@
 package main
 
 import (
-	"fmt"
-	"strconv"
-
 	"github.com/gin-gonic/gin"
 )
 
@@ -15,13 +12,32 @@ import (
 // 	c.String(200, "v2: %s %s", c.Request.Method, c.Request.URL.Path)
 // }
 
-func add(c *gin.Context) {
-	x, _ := strconv.ParseFloat(c.Param("x"), 64)
-	y, _ := strconv.ParseFloat(c.Param("y"), 64)
+// func add(c *gin.Context) {
+// 	x, _ := strconv.ParseFloat(c.Param("x"), 64)
+// 	y, _ := strconv.ParseFloat(c.Param("y"), 64)
 
-	c.String(200, fmt.Sprintf("Sum: %f", x + y))
+// 	c.String(200, fmt.Sprintf("Sum: %f", x + y))
+// }
+
+type AddParams struct {
+	X float64 `json:"x"`
+	Y float64 `json:"y"`
 }
 
+
+func add(c *gin.Context) {
+	var ap AddParams
+	if err := c.ShouldBindJSON(&ap); err != nil {
+		c.JSON(400, gin.H {
+			"error": "Calculator error",
+		})
+		return
+	}
+
+	c.JSON(200, gin.H {
+		"Sum": ap.X + ap.Y,
+	})
+}
 
 
 func main() {
@@ -44,8 +60,9 @@ func main() {
 	// v2 := router.Group("/v2")
 	// v2.GET("/products", v2EndPointHandler)
 
-	router.GET("/add/:x/:y", add)
+	// router.GET("/add/:x/:y", add)
 
+	router.POST("/add", add)
 
 	router.Run(":3000")
 }
