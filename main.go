@@ -1,16 +1,27 @@
 package main
 
 import (
+	"fmt"
+	"strconv"
+
 	"github.com/gin-gonic/gin"
 )
 
-func v1EndPointHandler(c *gin.Context) {
-	c.String(200, "v1: %s %s", c.Request.Method, c.Request.URL.Path)
+// func v1EndPointHandler(c *gin.Context) {
+// 	c.String(200, "v1: %s %s", c.Request.Method, c.Request.URL.Path)
+// }
+
+// func v2EndPointHandler(c *gin.Context) {
+// 	c.String(200, "v2: %s %s", c.Request.Method, c.Request.URL.Path)
+// }
+
+func add(c *gin.Context) {
+	x, _ := strconv.ParseFloat(c.Param("x"), 64)
+	y, _ := strconv.ParseFloat(c.Param("y"), 64)
+
+	c.String(200, fmt.Sprintf("Sum: %f", x + y))
 }
 
-func v2EndPointHandler(c *gin.Context) {
-	c.String(200, "v2: %s %s", c.Request.Method, c.Request.URL.Path)
-}
 
 
 func main() {
@@ -26,12 +37,14 @@ func main() {
 	// })
 
 
-	v1 := router.Group("/v1")
-	v1.GET("/products", v1EndPointHandler)
+	// v1 := router.Group("/v1")
+	// v1.GET("/products", v1EndPointHandler)
 
 
-	v2 := router.Group("/v2")
-	v2.GET("/products", v2EndPointHandler)
+	// v2 := router.Group("/v2")
+	// v2.GET("/products", v2EndPointHandler)
+
+	router.GET("/add/:x/:y", add)
 
 
 	router.Run(":3000")
