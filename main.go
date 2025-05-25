@@ -27,15 +27,18 @@ type AddParams struct {
 
 func add(c *gin.Context) {
 	var ap AddParams
-	if err := c.ShouldBindJSON(&ap); err != nil {
+	err := c.ShouldBindJSON(&ap)
+	if err != nil {
 		c.JSON(400, gin.H {
 			"error": "Calculator error",
+			"check": err, 
 		})
 		return
 	}
 
 	c.JSON(200, gin.H {
 		"Sum": ap.X + ap.Y,
+		"check2": err, 
 	})
 }
 
