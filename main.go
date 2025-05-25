@@ -1,8 +1,7 @@
 package main
 
 import (
-	"fmt"
-
+	cors "github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 )
 
@@ -48,10 +47,10 @@ import (
 // 	Name string `json:"name" xml:"Name" yaml:"name"`
 // }
 
-type PrintJob struct {
-	JobId int `json:"jobId" binding:"required,gte=10000"`
-	Pages int `json:"pages" binding:"required,gte=1,lte=100"`
-}
+// type PrintJob struct {
+// 	JobId int `json:"jobId" binding:"required,gte=10000"`
+// 	Pages int `json:"pages" binding:"required,gte=1,lte=100"`
+// }
 
 
 
@@ -106,17 +105,27 @@ func main() {
 	// 	ctx.YAML(200, product)
 	// })
 
-	router.POST("/print", func(c *gin.Context) {
-		var p PrintJob
-		if err := c.ShouldBindJSON(&p); err != nil {
-			c.JSON(400, gin.H{
-				"error": "Invalid print job",
-				"details": err.Error(),
-			})
-			return
-		}
+	// router.POST("/print", func(c *gin.Context) {
+	// 	var p PrintJob
+	// 	if err := c.ShouldBindJSON(&p); err != nil {
+	// 		c.JSON(400, gin.H{
+	// 			"error": "Invalid print job",
+	// 			"details": err.Error(),
+	// 		})
+	// 		return
+	// 	}
+	// 	c.JSON(200, gin.H{
+	// 		"message": fmt.Sprintf("Print job #%v started!", p.JobId),
+	// 	})
+	// })
+
+
+
+	router.Use(cors.Default())
+
+	router.GET("/", func (c* gin.Context) {
 		c.JSON(200, gin.H{
-			"message": fmt.Sprintf("Print job #%v started!", p.JobId),
+			"message": "CORS works!",
 		})
 	})
 
