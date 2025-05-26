@@ -1,9 +1,10 @@
 package main
 
 import (
-	"github.com/gin-gonic/gin"
-
 	"log"
+	"net/http"
+
+	"github.com/gin-gonic/gin"
 )
 
 // func v1EndPointHandler(c *gin.Context) {
@@ -58,7 +59,25 @@ func FindUserAgent() gin.HandlerFunc {
 	return func(c *gin.Context) {
 		log.Println(c.GetHeader("User-Agent"))
 	
-		c.Next()}
+		c.Next()
+	}
+}
+
+func CookieTool() gin.HandlerFunc {
+	return func(c *gin.Context) {
+		if cookie, err := c.Cookie("my_cookie"); err == nil {
+			if cookie == "ok" {
+				c.Next()
+				return
+			}
+		}
+
+		c.JSON(http.StatusForbidden, gin.H {
+			"error" : "Forbidden with no cookie",
+		})
+
+		c.Abort() // Stop further processing
+	}
 }
 
 func main() {
@@ -137,13 +156,27 @@ func main() {
 	// })
 
 
-	router.Use(FindUserAgent())
+	// router.Use(FindUserAgent())
 
-	router.GET("/", func (c *gin.Context) {
-		c.JSON(200, gin.H {
-			"message": "Middleware works!",
+	// router.GET("/", func (c *gin.Context) {
+	// 	c.JSON(200, gin.H {
+	// 		"message": "Middleware works!",
+	// 	})
+	// })
+
+	router.GET("/login", func (c *gin.Context) {
+		c.SetCookie("my_cookie", "ok", 300, "/", "localhost", false, true)
+
+		c.String(200, "Login successful! Cookie set." +
+			" You can now access protected routes.")
+	})
+
+	router.GET("/home", CookieTool(), func(c *gin.Context) {
+		c.JSON(200, gin.H{
+			"message": "Welcome to the home page!",
 		})
 	})
+
 
 
 	router.Run(":3000")
